@@ -12,6 +12,11 @@ import com.example.soal_uts_bug_fixing.databinding.ActivityFormBinding
 class FormActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFormBinding
     companion object{
+        // menambahkan extra pada companion object
+        const val EXTRA_NAMA = "extra_name"
+        const val EXTRA_IDENTITAS = "extra_identitas"
+        const val EXTRA_GENDER = "extra_gender"
+        const val EXTRA_KELUHAN = "extra_keluhan"
     }
 
     private lateinit var gendersArray : Array<String>
@@ -21,14 +26,16 @@ class FormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        gendersArray = resources.getStringArray()
+        //menambahkan R.array
+        gendersArray = resources.getStringArray(R.array.gender_descriptions)
         // Gunakan array yang sudah di buat di folder values
 
 
         with(binding){
             val adapterGenders = ArrayAdapter(this@FormActivity, R.layout.custom_spinner, gendersArray)
             adapterGenders.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            //
+            //menambahkan adapter
+            genderSpinner.adapter = adapterGenders
 
             genderSpinner.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -49,7 +56,8 @@ class FormActivity : AppCompatActivity() {
                     intentToAppointment.putExtra(EXTRA_IDENTITAS, identitasEdt.text.toString())
                     intentToAppointment.putExtra(EXTRA_GENDER, genderInput)
                     intentToAppointment.putExtra(EXTRA_KELUHAN, keluhanEdt.text.toString())
-                    //
+                    //start activity
+                    startActivity(intentToAppointment)
                 }else{
                     Toast.makeText(this@FormActivity, "MASIH ADA KOLOM YANG KOSONG", Toast.LENGTH_SHORT).show()
                 }

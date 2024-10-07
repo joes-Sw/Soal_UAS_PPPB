@@ -48,21 +48,22 @@ class AppointmentActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListe
         tipePertemuan =""
 
         with(binding){
-
-            tombolKalender.setOnClickListener {
+            //menyesuaikan id button yang ada di activity_appointment.xml
+            kalenderTxt.setOnClickListener {
                 val datePicker = DatePicker()
                 datePicker.show(supportFragmentManager, "datePicker")
             }
 
-            tombolJam.setOnClickListener {
+            timerTxt.setOnClickListener {
                 val timePicker = TimePicker()
                 timePicker.show(supportFragmentManager, "timePicker")
             }
 
-            tombolSubmit.setOnClickListener {
+            submitBtn.setOnClickListener {
                 if(fieldNotEmpty()){
                     val dialog = DialogExit()
-                    //
+                    //menambahkan dialog show
+                    dialog.show(supportFragmentManager, "dialogExit")
                 }else{
                     Toast.makeText(this@AppointmentActivity, "MASIH ADA KOLOM YANG KOSONG", Toast.LENGTH_SHORT).show()
                 }
@@ -92,11 +93,14 @@ class AppointmentActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListe
 
     override fun onDateSet(p0: android.widget.DatePicker?, day: Int, month: Int, year:
     Int) {
-        //
+        //menambahkan dateinput untuk di kalendertxt
+        dateInput = "$day/ ${month + 1 }/$year"
+        binding.kalenderTxt.text = dateInput
     }
 
     override fun onTimeSet(p0: android.widget.TimePicker?, hour: Int, menit:Int) {
-        timeInput = String.format("%02d:%02d", hour, minute)
+        // menjadikan "minute" ke "menit"
+        timeInput = String.format("%02d:%02d", hour, menit)
         binding.timerTxt.text = timeInput
     }
 
@@ -111,8 +115,11 @@ class AppointmentActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListe
                 val intentToResult = Intent(this@AppointmentActivity, ResultActivity::class.java)
                 intentToResult.putExtra(EXTRA_TELEFON, binding.kontakEdt.text.toString())
                 intentToResult.putExtra(EXTRA_TANGGAL, binding.kalenderTxt.text.toString())
-                (EXTRA_WAKTU, binding.timerTxt.text.toString())
-                (EXTRA_TIPE, tipePertemuan)
+                // Menghapus kodingan extra yang salah
+//                (EXTRA_WAKTU), binding.timerTxt.text.toString())
+//                (EXTRA_TIPE), binding)
+                intentToResult.putExtra(EXTRA_WAKTU, binding.timerTxt.text.toString())
+                intentToResult.putExtra(EXTRA_TIPE, binding.kalenderTxt.text.toString())
 
                 intentToResult.putExtra(FormActivity.EXTRA_NAMA, nama)
                 intentToResult.putExtra(FormActivity.EXTRA_IDENTITAS, identitas)
@@ -148,9 +155,10 @@ class AppointmentActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListe
 class DatePicker: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
-        //
-        //
-        //
+        //menambahkan valuenya
+        val year = calendar.get(Calendar.YEAR)
+        val monthOfYear = calendar.get(Calendar.MONTH)
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
         return DatePickerDialog(
             requireActivity(),
             activity as DatePickerDialog.OnDateSetListener,
@@ -162,7 +170,18 @@ class DatePicker: DialogFragment() {
 }
 
 class TimePicker: DialogFragment() {
-//
+    // menambahkan kodingan timepicker
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val calendar = Calendar.getInstance()
+        val hourOfDay = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        return TimePickerDialog(
+            requireActivity(),
+            activity as TimePickerDialog.OnTimeSetListener,
+            hourOfDay,minute,
+            DateFormat.is24HourFormat(activity)
+        )
+    }
 }
 
 class DialogExit : DialogFragment() {
